@@ -1,6 +1,7 @@
 package br.com.brq.personregistry.view
 
 import android.content.Intent
+import android.os.SystemClock
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
@@ -54,8 +55,8 @@ class MainActivityTest {
         onView(withId(R.id.edit_cep))
             .perform(scrollTo())
             .perform(replaceText("12071580"), pressImeActionButton(), closeSoftKeyboard())
-
-        onView(withText("Taubaté")).perform(scrollTo()).check(matches(isDisplayed()))
+SystemClock.sleep(5000)
+        onView(withText("Taubaté")).perform( scrollTo()).check(matches(isDisplayed()))
     }
 
     @Test

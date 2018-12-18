@@ -81,6 +81,14 @@ class PersonViewModel(application: Application) : AndroidViewModel(application) 
             repository.getAddress(cep)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe {
+                  //colocar dialog
+
+                }
+                .doAfterTerminate {
+                    //retirar dialog
+
+                }
                 .subscribe({ address ->
                     cepResponse.value = address
                 }, {
