@@ -16,84 +16,108 @@ class PersonViewModel(application: Application) : AndroidViewModel(application) 
     private val disposable = CompositeDisposable()
     val cepResponse: MutableLiveData<Address> = MutableLiveData()
     val personResponse: MutableLiveData<List<Person>> = MutableLiveData()
+    val isLoading: MutableLiveData<Boolean> = MutableLiveData()
 
     private val repository = PersonRepository(getApplication())
 
-    fun savePerson(person: Person) {
+    fun savePerson(person: Person?) {
         disposable.add(
-            repository.insert(person)
-                .subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    Log.i("Log", "Item salvo")
-                    getAll()
-                }, {
-                    Log.i("Log", "Error : ${it.message}")
-                })
+                repository.insert(person)
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnSubscribe {
+                            isLoading.setValue(true)
+                        }
+                        .doOnTerminate {
+                            isLoading.setValue(false)
+                        }
+                        .subscribe({
+                            Log.i("Log", "Item salvo")
+                            getAll()
+                        }, {
+                            Log.i("Log", "Error : ${it.message}")
+                        })
         )
     }
 
-    fun updatePerson(person: Person) {
+    fun updatePerson(person: Person?) {
         disposable.add(
-            repository.update(person)
-                .subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    Log.i("Log", "Item alterado")
-                    getAll()
-                }, {
-                    Log.i("Log", "Error : ${it.message}")
-                })
+                repository.update(person)
+                        .subscribeOn(Schedulers.computation())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnSubscribe {
+                            isLoading.setValue(true)
+                        }
+                        .doOnTerminate {
+                            isLoading.setValue(false)
+                        }
+                        .subscribe({
+                            Log.i("Log", "Item alterado")
+                            getAll()
+                        }, {
+                            Log.i("Log", "Error : ${it.message}")
+                        })
         )
     }
 
     fun deletePerson(person: Person?) {
         person?.id?.let {
             disposable.add(
-                repository.delete(person)
-                    .subscribeOn(Schedulers.computation())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({
-                        Log.i("Log", "Item deletado")
-                        getAll()
-                    }, {
-                        Log.i("Log", "Error : ${it.message}")
-                    })
+                    repository.delete(person)
+                            .subscribeOn(Schedulers.computation())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .doOnSubscribe {
+                                isLoading.setValue(true)
+                            }
+                            .doOnTerminate {
+                                isLoading.setValue(false)
+                            }
+                            .subscribe({
+                                Log.i("Log", "Item deletado")
+                                getAll()
+                            }, {
+                                Log.i("Log", "Error : ${it.message}")
+                            })
             )
         }
     }
 
     fun getAll() {
         disposable.add(
-            repository.getAll()
-                .subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ response ->
-                    personResponse.value = response
-                }, {
-                    Log.i("Log", "Error : ${it.message}")
-                })
+                repository.getAll()
+                        .subscribeOn(Schedulers.computation())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnSubscribe {
+                            isLoading.setValue(true)
+                        }
+                        .doOnTerminate {
+                            isLoading.setValue(false)
+                        }
+                        .subscribe({ response ->
+                            personResponse.value = response
+                            isLoading.setValue(false)
+                        }, {
+                            Log.i("Log", "Error : ${it.message}")
+                        })
         )
     }
 
     fun getAddress(cep: String) {
         disposable.add(
-            repository.getAddress(cep)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe {
-                  //colocar dialog
-
-                }
-                .doAfterTerminate {
-                    //retirar dialog
-
-                }
-                .subscribe({ address ->
-                    cepResponse.value = address
-                }, {
-                    Log.i("Log", "Error : ${it.message}")
-                })
+                repository.getAddress(cep)
+                        .subscribeOn(Schedulers.computation())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnSubscribe {
+                            isLoading.setValue(true)
+                        }
+                        .doAfterTerminate {
+                            isLoading.setValue(false)
+                        }
+                        .subscribe({ address ->
+                            cepResponse.value = address
+                        }, {
+                            Log.i("Log", "Error : ${it.message}")
+                        })
         )
     }
 

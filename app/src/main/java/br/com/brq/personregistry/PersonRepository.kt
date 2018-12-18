@@ -8,6 +8,7 @@ import br.com.brq.personregistry.interfaces.PersonDAO
 import br.com.brq.personregistry.model.Address
 import br.com.brq.personregistry.model.Person
 import io.reactivex.Flowable
+import io.reactivex.Observable
 import io.reactivex.Single
 
 class PersonRepository(context: Context) {
@@ -20,19 +21,20 @@ class PersonRepository(context: Context) {
         return RetrofitService().getApiService().getAddress(cep)
     }
 
-    fun update(person: Person): Single<Unit> {
-        return Single.just(personDAO.update(person))
+    fun insert(person: Person?): Observable<Unit> {
+
+        return Observable.fromCallable { personDAO.insert(person) }
     }
 
-    fun insert(person: Person): Single<Unit> {
-        return Single.just(personDAO.insert(person))
+    fun update(person: Person?): Observable<Unit> {
+        return Observable.fromCallable { personDAO.update(person) }
     }
 
-    fun delete(person: Person): Single<Unit> {
-        return Single.just(personDAO.delete(person))
+    fun delete(person: Person): Observable<Unit> {
+        return Observable.fromCallable { personDAO.delete(person) }
     }
 
-    fun getAll(): Flowable<List<Person>> {
+    fun getAll(): Observable<List<Person>> {
         return personDAO.getAll()
     }
 
@@ -40,7 +42,7 @@ class PersonRepository(context: Context) {
         return personDAO.getAllPerson()
     }
 
-    fun getByName(name: String?): Single<Person?> {
-        return Single.just(personDAO.getByName(name))
+    fun getByName(name: String?): Observable<Person?> {
+        return Observable.fromCallable { personDAO.getByName(name) }
     }
 }

@@ -4,17 +4,18 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import br.com.brq.personregistry.model.Person
 import io.reactivex.Flowable
+import io.reactivex.Observable
 
 @Dao
 interface PersonDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(person: Person)
+    fun insert(person: Person?)
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    fun update(person: Person)
+    fun update(person: Person?)
 
     @Query("SELECT * FROM person")
-    fun getAll(): Flowable<List<Person>>
+    fun getAll(): Observable<List<Person>>
 
     @Query("SELECT * FROM person")
     fun getAllPerson(): LiveData<List<Person>>

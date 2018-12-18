@@ -13,8 +13,11 @@ class RetrofitService {
 
     private lateinit var retrofit: Retrofit
 
+    companion object {
+        var baseUrl: String  = "https://viacep.com.br/ws/"
+    }
+
     private fun getRetrofit(): Retrofit {
-        val baseUrl: String  = "https://viacep.com.br/ws/"
 
             // configurações da conexão
             val httpClient = OkHttpClient.Builder()

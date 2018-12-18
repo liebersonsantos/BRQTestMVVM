@@ -12,6 +12,6 @@ data class Person(
     var id: Long? = null,
     var name: String? = null,
     var cpf: String? = null,
-    var address: Address? = null,
+    var address: Address? = Address(),
     var birthDay: String? = null
 ) : Parcelable
